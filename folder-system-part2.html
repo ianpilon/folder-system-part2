@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Next Level — Why Folders Beat Frameworks (Part 2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-2: #131826;
+    --ink: #f5f0e8;
+    --ink-dim: #8b8578;
+    --paper: #f5f0e8;
+    --acid: #d4ff3d;
+    --hot: #ff3d6e;
+    --sky: #5eead4;
+    --amber: #ffb84d;
+    --line: rgba(245, 240, 232, 0.12);
+    --line-bright: rgba(245, 240, 232, 0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter Tight', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  /* subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.5;
+  }
+
+  /* noise */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' /%3E%3C/svg%3E");
+  }
+
+  main, header, section, footer { position: relative; z-index: 2; }
+
+  /* ============ HERO ============ */
+  .hero {
+    min-height: 100vh;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-dim);
+    margin-bottom: 3rem;
+  }
+
+  .meta-row .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--acid);
+    border-radius: 50%;
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .meta-row .sep { color: var(--ink-dim); }
+
+  h1.title {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: clamp(3rem, 9vw, 8.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+  }
+
+  h1.title .italic {
+    font-style: italic;
+    color: var(--acid);
+  }
+
+  h1.title .strike {
+    position: relative;
+    color: var(--ink-dim);
+  }
+  h1.title .strike::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -2%;
+    right: -2%;
+    height: 4px;
+    background: var(--hot);
+    transform: rotate(-2deg);
+  }
+
+  .hero-deck {
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    max-width: 720px;
+    color: var(--ink);
+    line-height: 1.5;
+    margin-bottom: 3rem;
+  }
+
+  .hero-deck strong {
+    color: var(--acid);
+    font-weight: 700;
+  }
+
+  .scroll-cue {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .scroll-cue .line {
+    width: 40px;
+    height: 1px;
+    background: var(--ink-dim);
+  }
+
+  /* ============ SECTIONS ============ */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--acid);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--acid);
+  }
+
+  h2.section-title {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  h2.section-title em {
+    color: var(--acid);
+    font-style: italic;
+  }
+
+  .lead {
+    font-size: 1.15rem;
+    max-width: 720px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-bottom: 3rem;
+  }
+
+  .lead strong { color: var(--acid); font-weight: 600; }
+
+  /* ============ THE LADDER (3 LEVELS) ============ */
+  .ladder {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    position: relative;
+  }
+
+  @media (max-width: 900px) {
+    .ladder { grid-template-columns: 1fr; }
+  }
+
+  .level-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line-bright);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .level-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--ink-dim);
+    transition: all 0.4s;
+  }
+
+  .level-card[data-level="1"]::before { background: var(--hot); }
+  .level-card[data-level="2"]::before { background: var(--amber); }
+  .level-card[data-level="3"]::before { background: var(--acid); }
+
+  .level-card:hover, .level-card.expanded {
+    transform: translateY(-4px);
+    border-color: var(--ink);
+    background: #1a2030;
+  }
+
+  .level-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 1rem;
+  }
+
+  .level-card h3 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 1.8rem;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .level-card[data-level="1"] h3 { color: #ff8da8; }
+  .level-card[data-level="2"] h3 { color: var(--amber); }
+  .level-card[data-level="3"] h3 { color: var(--acid); }
+
+  .level-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  .level-desc {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  .level-effort {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-dim);
+  }
+
+  .effort-bar {
+    display: flex;
+    gap: 3px;
+  }
+
+  .effort-pip {
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--ink-dim);
+    border-radius: 50%;
+  }
+
+  .effort-pip.filled { background: var(--acid); border-color: var(--acid); }
+
+  .level-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .level-card.expanded .level-detail {
+    max-height: 400px;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .level-detail p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  .level-detail .ex {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--sky);
+    background: rgba(94, 234, 212, 0.06);
+    padding: 0.75rem;
+    border-left: 2px solid var(--sky);
+    margin-top: 0.5rem;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ============ DIALOGUE FLOW (FIDGET-style viz) ============ */
+  .dialogue-wrap {
+    background: var(--bg-2);
+    border: 1px solid var(--line-bright);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin-top: 2rem;
+  }
+
+  .dialogue-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (max-width: 700px) {
+    .dialogue-header { grid-template-columns: 1fr; }
+    .dialogue-header .arrow { transform: rotate(90deg); margin: 0.5rem auto; }
+  }
+
+  .dialogue-header .side {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .dialogue-header .side.you { color: var(--sky); }
+  .dialogue-header .side.ai { color: var(--amber); text-align: right; }
+
+  .dialogue-header .arrow {
+    color: var(--ink-dim);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .dialogue-flow {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .dialogue-flow { grid-template-columns: 1fr; }
+    .dialogue-flow .connector { display: none; }
+  }
+
+  .turn {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .turn.you { border-left: 3px solid var(--sky); }
+  .turn.ai { border-left: 3px solid var(--amber); }
+
+  .turn:hover {
+    background: #1a2030;
+    transform: translateX(2px);
+  }
+
+  .turn.highlighted {
+    background: #1a2030;
+    box-shadow: 0 0 0 1px var(--acid);
+  }
+
+  .turn .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-dim);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .turn .insight {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--line-bright);
+    font-size: 0.8rem;
+    color: var(--acid);
+    font-family: 'IBM Plex Mono', monospace;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .turn.highlighted .insight {
+    opacity: 1;
+    max-height: 100px;
+  }
+
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1.5rem;
+    color: var(--ink-dim);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+  }
+
+  .empty-slot {
+    height: 60px;
+  }
+
+  .dialogue-distill {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(212, 255, 61, 0.05);
+    border: 1px solid var(--acid);
+    border-radius: 8px;
+  }
+
+  .dialogue-distill .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--acid);
+    margin-bottom: 0.75rem;
+  }
+
+  .distill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .distill-item {
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid var(--line);
+  }
+
+  .distill-item .k {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .distill-item .v {
+    font-size: 0.9rem;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  /* ============ THE WORKFLOW PIPELINE ============ */
+  .pipeline {
+    margin-top: 2rem;
+  }
+
+  .pipeline-track {
+    position: relative;
+    padding: 2rem 0;
+  }
+
+  .pipeline-track::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--hot), var(--amber), var(--acid), var(--sky));
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+
+  .pipeline-stages {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (max-width: 800px) {
+    .pipeline-track::before { display: none; }
+    .pipeline-stages { grid-template-columns: 1fr; gap: 1rem; }
+  }
+
+  .stage {
+    background: var(--bg-2);
+    border: 1px solid var(--line-bright);
+    border-radius: 10px;
+    padding: 1.5rem 1.25rem;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin: 0 0.5rem;
+  }
+
+  .stage:hover {
+    transform: translateY(-4px);
+    border-color: var(--acid);
+  }
+
+  .stage-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .stage[data-stage="1"] .stage-icon { background: rgba(255, 61, 110, 0.15); }
+  .stage[data-stage="2"] .stage-icon { background: rgba(255, 184, 77, 0.15); }
+  .stage[data-stage="3"] .stage-icon { background: rgba(212, 255, 61, 0.15); }
+  .stage[data-stage="4"] .stage-icon { background: rgba(94, 234, 212, 0.15); }
+
+  .stage h4 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 1.3rem;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stage .step-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  .stage p {
+    font-size: 0.85rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .stage .prompt-count {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--acid);
+  }
+
+  .pipeline-summary {
+    margin-top: 2rem;
+    padding: 1.5rem 2rem;
+    background: var(--bg-2);
+    border: 1px solid var(--line-bright);
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat .big {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--acid);
+    margin-bottom: 0.25rem;
+  }
+
+  .stat .small {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-dim);
+  }
+
+  /* ============ VOICE FUTURE ============ */
+  .voice-section {
+    background: linear-gradient(180deg, var(--bg) 0%, #0d1424 100%);
+    border-radius: 24px;
+    padding: 4rem 3rem;
+    margin: 6rem auto;
+    max-width: 1400px;
+    border: 1px solid var(--line-bright);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .voice-section::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(212, 255, 61, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .voice-demo {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .voice-demo { grid-template-columns: 1fr; }
+  }
+
+  .mic-vis {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    border: 2px solid var(--acid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .mic-vis:hover {
+    background: #1a2030;
+  }
+
+  .mic-vis.active {
+    box-shadow: 0 0 0 8px rgba(212, 255, 61, 0.15), 0 0 0 16px rgba(212, 255, 61, 0.08);
+  }
+
+  .mic-vis svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .mic-vis .pulse-ring {
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 2px solid var(--acid);
+    opacity: 0;
+  }
+
+  .mic-vis.active .pulse-ring {
+    animation: pulseRing 1.5s ease-out infinite;
+  }
+
+  @keyframes pulseRing {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  .voice-transcript {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.5rem;
+    min-height: 220px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  .voice-line {
+    margin-bottom: 0.75rem;
+    opacity: 0;
+    animation: fadeUp 0.5s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .voice-line .who {
+    display: inline-block;
+    min-width: 60px;
+    font-weight: 600;
+  }
+
+  .voice-line.user .who { color: var(--sky); }
+  .voice-line.agent .who { color: var(--amber); }
+  .voice-line .what { color: var(--ink); }
+
+  .voice-controls {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .voice-btn {
+    background: transparent;
+    border: 1px solid var(--line-bright);
+    color: var(--ink);
+    padding: 0.6rem 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .voice-btn:hover {
+    background: var(--acid);
+    color: var(--bg);
+    border-color: var(--acid);
+  }
+
+  /* ============ PART 1 vs PART 2 ============ */
+  .compare-section {
+    margin-top: 3rem;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 700px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+
+  .compare-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line-bright);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+
+  .compare-card .which {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .compare-card h3 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .compare-card.part2 h3 { color: var(--acid); }
+
+  .compare-card ul {
+    list-style: none;
+  }
+
+  .compare-card li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .compare-card li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--ink-dim);
+  }
+
+  .compare-card.part2 li::before {
+    color: var(--acid);
+  }
+
+  /* ============ KEY INSIGHT CALLOUT ============ */
+  .insight-callout {
+    background: var(--bg-2);
+    border-left: 3px solid var(--acid);
+    padding: 2rem 2.5rem;
+    margin: 3rem 0;
+    border-radius: 0 12px 12px 0;
+  }
+
+  .insight-callout .quote-mark {
+    font-family: 'Instrument Serif', serif;
+    font-size: 4rem;
+    line-height: 0.5;
+    color: var(--acid);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .insight-callout p {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    line-height: 1.25;
+    font-style: italic;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+    border-top: 1px solid var(--line);
+    margin-top: 4rem;
+  }
+
+  footer a {
+    color: var(--acid);
+    text-decoration: none;
+  }
+
+  /* Mobile spacing */
+  @media (max-width: 640px) {
+    section { padding: 4rem 1.5rem; }
+    .hero { padding: 2rem 1.5rem; }
+    .voice-section { padding: 2.5rem 1.5rem; margin: 3rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="meta-row">
+    <span class="dot"></span>
+    <span>PART 02</span>
+    <span class="sep">/</span>
+    <span>Interpretable Context</span>
+    <span class="sep">/</span>
+    <span>~10 min read</span>
+  </div>
+
+  <h1 class="title">
+    You're <span class="strike">building agents</span>.<br>
+    You should be <span class="italic">building dialogue.</span>
+  </h1>
+
+  <p class="hero-deck">
+    The first video taught you folders beat frameworks. This one goes deeper: <strong>every workflow you'll ever build is really just a conversation that got organized.</strong> Plus — voice-controlled AI workspaces, and why one folder system replaces six months of infrastructure.
+  </p>
+
+  <div class="scroll-cue">
+    <span class="line"></span>
+    <span>Scroll to begin</span>
+  </div>
+</header>
+
+<!-- ============ LEVEL 1-2-3 ============ -->
+<section>
+  <div class="section-label">01 / The Maturity Ladder</div>
+  <h2 class="section-title">Three levels of <em>using AI</em>.</h2>
+  <p class="lead">Most people are stuck on Level 1 forever. Level 2 is where it starts feeling powerful. Level 3 is where the magic happens — and the folder system is what unlocks it. <strong>Click each level to expand.</strong></p>
+
+  <div class="ladder">
+    <div class="level-card" data-level="1" onclick="toggleLevel(1)">
+      <div class="level-num">LEVEL 01</div>
+      <h3>Just chatting.</h3>
+      <div class="level-tag">copy + paste + pray</div>
+      <p class="level-desc">You open ChatGPT or Claude. You type a question. You copy the answer somewhere. You start over. The conversation forgets you exist when you close the tab.</p>
+      <div class="level-effort">
+        <span>Effort</span>
+        <div class="effort-bar">
+          <div class="effort-pip filled"></div>
+          <div class="effort-pip"></div>
+          <div class="effort-pip"></div>
+        </div>
+      </div>
+      <div class="level-detail">
+        <p>This is where 90% of people live. You can get decent results but it's a grind — you have to re-explain context every single time.</p>
+        <div class="ex">"Write me a blog post" → answer → "make it shorter" → answer → "more casual" → answer → start over tomorrow</div>
+      </div>
+    </div>
+
+    <div class="level-card" data-level="2" onclick="toggleLevel(2)">
+      <div class="level-num">LEVEL 02</div>
+      <h3>Saved prompts.</h3>
+      <div class="level-tag">prompt libraries + skills</div>
+      <p class="level-desc">You notice you keep typing the same things. So you save them. Maybe in a notes app, maybe in a "prompt library." You paste them in, in the right order, every time. This is what most "skills" actually are.</p>
+      <div class="level-effort">
+        <span>Effort</span>
+        <div class="effort-bar">
+          <div class="effort-pip filled"></div>
+          <div class="effort-pip filled"></div>
+          <div class="effort-pip"></div>
+        </div>
+      </div>
+      <div class="level-detail">
+        <p>Better, but you're still the one doing the work of routing — picking which prompt to use, in which order, with what context. The AI has no map.</p>
+        <div class="ex">Prompt 1: "act as my editor" → Prompt 2: "use this voice guide" → Prompt 3: "now rewrite this draft"</div>
+      </div>
+    </div>
+
+    <div class="level-card" data-level="3" onclick="toggleLevel(3)">
+      <div class="level-num">LEVEL 03</div>
+      <h3>Folders + Markdown.</h3>
+      <div class="level-tag">the interpretable context way</div>
+      <p class="level-desc">You stop prompting and start building a <em>workspace</em>. The AI walks your folders, reads the right Markdown files at the right time, and routes itself. One agent, infinite jobs. No LangChain, no vector DBs, no agent swarm.</p>
+      <div class="level-effort">
+        <span>Effort</span>
+        <div class="effort-bar">
+          <div class="effort-pip filled"></div>
+          <div class="effort-pip filled"></div>
+          <div class="effort-pip filled"></div>
+        </div>
+      </div>
+      <div class="level-detail">
+        <p>The upfront setup is bigger, but every single task afterward is one short prompt. The AI brings its own context from your folder structure.</p>
+        <div class="ex">"Hey, write a blog post on X" → AI reads voice.md, finds drafts/, knows the rules → done</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIALOGUE IS THE FOUNDATION ============ -->
+<section>
+  <div class="section-label">02 / The Big Idea</div>
+  <h2 class="section-title">Every prompt is a <em>captured conversation.</em></h2>
+  <p class="lead">Here's the wild claim from the video: <strong>everything you build with AI traces back to one normal back-and-forth chat.</strong> Refining a paragraph, debugging code, writing a script — it all starts as a dialogue. The folder system just freezes that dialogue into reusable form. <strong>Hover or tap each line</strong> to see what's hidden inside.</p>
+
+  <div class="dialogue-wrap">
+    <div class="dialogue-header">
+      <div class="side you">◆ YOU say things</div>
+      <div class="arrow">⟷</div>
+      <div class="side ai">things AI says ◆</div>
+    </div>
+
+    <div class="dialogue-flow">
+      <div>
+        <div class="turn you" onmouseover="highlightTurn(this)" onmouseout="unhighlight()">
+          <span class="tag">your goal</span>
+          Can you tighten up this paragraph about climate change?
+          <div class="insight">→ GOAL extracted: "shorten text"</div>
+        </div>
+        <div class="empty-slot"></div>
+        <div class="turn you" onmouseover="highlightTurn(this)" onmouseout="unhighlight()">
+          <span class="tag">your constraint</span>
+          Hmm, the rhythm feels off compared to my original.
+          <div class="insight">→ CONSTRAINT extracted: "preserve voice + rhythm"</div>
+        </div>
+        <div class="empty-slot"></div>
+        <div class="turn you" onmouseover="highlightTurn(this)" onmouseout="unhighlight()">
+          <span class="tag">your refinement</span>
+          Better, but make it sound less stiff. More like me.
+          <div class="insight">→ CONSTRAINT extracted: "casual tone, personal voice"</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="connector">↘</div>
+        <div class="connector">↙</div>
+        <div class="connector">↘</div>
+        <div class="connector">↙</div>
+        <div class="connector">↘</div>
+      </div>
+
+      <div>
+        <div class="empty-slot"></div>
+        <div class="turn ai" onmouseover="highlightTurn(this)" onmouseout="unhighlight()">
+          <span class="tag">ai decision</span>
+          [trims wordy phrases, removes filler]
+          <div class="insight">→ DECISION logged: "compression by 30%"</div>
+        </div>
+        <div class="empty-slot"></div>
+        <div class="turn ai" onmouseover="highlightTurn(this)" onmouseout="unhighlight()">
+          <span class="tag">ai decision</span>
+          [adjusts sentence cadence, restores pauses]
+          <div class="insight">→ DECISION logged: "match original cadence"</div>
+        </div>
+        <div class="empty-slot"></div>
+        <div class="turn ai" onmouseover="highlightTurn(this)" onmouseout="unhighlight()">
+          <span class="tag">ai decision</span>
+          [softens vocabulary, adds conversational hedges]
+          <div class="insight">→ DECISION logged: "lower formality register"</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue-distill">
+      <div class="label">↓ Distilled into a Markdown file (saved forever)</div>
+      <div class="distill-grid">
+        <div class="distill-item">
+          <div class="k">GOAL</div>
+          <div class="v">Tighten paragraphs without losing meaning</div>
+        </div>
+        <div class="distill-item">
+          <div class="k">CONSTRAINT 01</div>
+          <div class="v">Preserve original rhythm + cadence</div>
+        </div>
+        <div class="distill-item">
+          <div class="k">CONSTRAINT 02</div>
+          <div class="v">Match user's casual voice (not stiff)</div>
+        </div>
+        <div class="distill-item">
+          <div class="k">RESULT</div>
+          <div class="v">Next time, one prompt does what 5 turns did before</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-callout">
+    <span class="quote-mark">"</span>
+    <p>If you can spot the goal and the constraints inside a normal chat, you can turn that chat into a Markdown file. And that Markdown file replaces the chat forever.</p>
+  </div>
+</section>
+
+<!-- ============ REAL WORKFLOW PIPELINE ============ -->
+<section>
+  <div class="section-label">03 / Proof It Works</div>
+  <h2 class="section-title">A real workflow — <em>two prompts in.</em></h2>
+  <p class="lead">In the video, he describes building three full videos for a client called NLP Logics. Research → script → audio → animation. The whole thing ran on folders and Markdown — <strong>and he only typed two real prompts the whole way through.</strong> Click each stage:</p>
+
+  <div class="pipeline">
+    <div class="pipeline-track">
+      <div class="pipeline-stages">
+        <div class="stage" data-stage="1" onclick="popStage(1)">
+          <div class="stage-icon">🔍</div>
+          <div class="step-meta">STAGE 01</div>
+          <h4>Research</h4>
+          <p>AI reads the client's products folder + tone guide. Finds angles, hooks, source material.</p>
+          <div class="prompt-count">prompts typed: 1</div>
+        </div>
+
+        <div class="stage" data-stage="2" onclick="popStage(2)">
+          <div class="stage-icon">✍️</div>
+          <div class="step-meta">STAGE 02</div>
+          <h4>Script</h4>
+          <p>AI pulls research + writing rules from another folder. Drafts scripts in the user's voice.</p>
+          <div class="prompt-count">prompts typed: 1</div>
+        </div>
+
+        <div class="stage" data-stage="3" onclick="popStage(3)">
+          <div class="stage-icon">🎙️</div>
+          <div class="step-meta">STAGE 03</div>
+          <h4>Audio</h4>
+          <p>Existing ElevenLabs workflow grabs the script, generates voiceover in his cloned voice.</p>
+          <div class="prompt-count">prompts typed: 0</div>
+        </div>
+
+        <div class="stage" data-stage="4" onclick="popStage(4)">
+          <div class="stage-icon">🎬</div>
+          <div class="step-meta">STAGE 04</div>
+          <h4>Animation</h4>
+          <p>Animation code + voiceover assembled into a structured video he can still edit by hand.</p>
+          <div class="prompt-count">prompts typed: 0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline-summary">
+      <div class="stat">
+        <div class="big">2</div>
+        <div class="small">prompts total</div>
+      </div>
+      <div class="stat">
+        <div class="big">1</div>
+        <div class="small">AI agent</div>
+      </div>
+      <div class="stat">
+        <div class="big">0</div>
+        <div class="small">custom frameworks</div>
+      </div>
+      <div class="stat">
+        <div class="big">30K</div>
+        <div class="small">people using this</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VOICE FUTURE ============ -->
+<div class="voice-section">
+  <div class="section-label">04 / The Next Chapter</div>
+  <h2 class="section-title">Now imagine <em>talking to it.</em></h2>
+  <p class="lead">The new part of the video: a live demo where he and his team voice-controlled someone else's Claude Code instance during a video call. They added new psychometric scales to a research codebase by literally just talking. <strong>Total cost: $1.20 for an hour.</strong> Click the mic to play the demo:</p>
+
+  <div class="voice-demo">
+    <div class="mic-vis" id="mic" onclick="playVoiceDemo()">
+      <span class="pulse-ring"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#d4ff3d" stroke-width="2" stroke-linecap="round">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+    </div>
+
+    <div>
+      <div class="voice-transcript" id="transcript">
+        <div class="voice-line" style="opacity: 0.5;">
+          <span class="who">SYSTEM</span><span class="what">▸ Tap the mic to start the demo</span>
+        </div>
+      </div>
+      <div class="voice-controls">
+        <button class="voice-btn" onclick="playVoiceDemo()">▶ play demo</button>
+        <button class="voice-btn" onclick="resetVoice()">↻ reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ COMPARE PART 1 vs PART 2 ============ -->
+<section>
+  <div class="section-label">05 / What's New</div>
+  <h2 class="section-title">If you saw Part 1, here's <em>what's different.</em></h2>
+  <p class="lead">The core methodology — folders + Markdown — is the same. This video deepens it. Here's the diff:</p>
+
+  <div class="compare-grid">
+    <div class="compare-card part1">
+      <div class="which">PART 01 — THE FOLDER SYSTEM</div>
+      <h3>What we covered</h3>
+      <ul>
+        <li>The 3-layer folder house (Map → Rooms → Stuff)</li>
+        <li>How a Claude.md file routes the AI</li>
+        <li>Why context windows have limits ("the token jar")</li>
+        <li>Skills as modular instructions</li>
+        <li>A template folder structure you can copy</li>
+      </ul>
+    </div>
+
+    <div class="compare-card part2">
+      <div class="which">PART 02 — THIS VIDEO</div>
+      <h3>What's added</h3>
+      <ul>
+        <li>The 3-level maturity ladder (chat → prompts → folders)</li>
+        <li>Dialogue as the foundation of every workflow</li>
+        <li>The "Fidget" tool — visualizing goals vs. constraints</li>
+        <li>A real end-to-end client workflow (research → video)</li>
+        <li>Voice-controlled, multi-person AI workspaces</li>
+        <li>30K-person community + a research paper</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Built as a companion to Part 02 ✦ Interpretable Context Methodology
+</footer>
+
+<script>
+  /* ============ LEVEL EXPANSION ============ */
+  function toggleLevel(n) {
+    const card = document.querySelector(`.level-card[data-level="${n}"]`);
+    const wasOpen = card.classList.contains('expanded');
+    document.querySelectorAll('.level-card').forEach(c => c.classList.remove('expanded'));
+    if (!wasOpen) card.classList.add('expanded');
+  }
+
+  /* ============ DIALOGUE TURN HIGHLIGHT ============ */
+  function highlightTurn(el) {
+    document.querySelectorAll('.turn').forEach(t => t.classList.remove('highlighted'));
+    el.classList.add('highlighted');
+  }
+  function unhighlight() {
+    // keep last highlight visible briefly, then clear
+    setTimeout(() => {
+      // only clear if user isn't hovering anything
+      const stillHovered = document.querySelector('.turn:hover');
+      if (!stillHovered) {
+        document.querySelectorAll('.turn').forEach(t => t.classList.remove('highlighted'));
+      }
+    }, 300);
+  }
+
+  /* ============ PIPELINE STAGE POP ============ */
+  function popStage(n) {
+    const stage = document.querySelector(`.stage[data-stage="${n}"]`);
+    stage.style.transform = 'translateY(-12px) scale(1.03)';
+    setTimeout(() => {
+      stage.style.transform = '';
+    }, 400);
+  }
+
+  /* ============ VOICE DEMO ============ */
+  const voiceScript = [
+    { who: 'YOU', cls: 'user', text: 'Agent, are you ready for action?' },
+    { who: 'AGENT', cls: 'agent', text: '▸ Yes. I have access to the Ethics Engine codebase. What do you need?' },
+    { who: 'YOU', cls: 'user', text: 'Describe the workspace in under 50 words.' },
+    { who: 'AGENT', cls: 'agent', text: '▸ Ethics Engine tests AI models using psychology scales. Sends questions to GPT, Claude, etc. Analyzes results.' },
+    { who: 'YOU', cls: 'user', text: 'What scales are missing in the analysis engine?' },
+    { who: 'AGENT', cls: 'agent', text: '▸ Notable gaps: Dark Triad (machiavellianism, narcissism, psychopathy), empathy scales, moral disengagement, HEXACO honesty/humility...' },
+    { who: 'YOU', cls: 'user', text: 'Add the Dark Triad scale to the module.' },
+    { who: 'AGENT', cls: 'agent', text: '▸ Adding SD3 (Jones & Paulhus). Updating Claude.md, scales.py, and the frontend component...' },
+    { who: 'SYSTEM', cls: 'agent', text: '✓ Demo complete. Real cost: ~$1.20 / hour.' }
+  ];
+
+  let voiceTimer = null;
+
+  function playVoiceDemo() {
+    resetVoice();
+    const transcript = document.getElementById('transcript');
+    const mic = document.getElementById('mic');
+    mic.classList.add('active');
+    transcript.innerHTML = '';
+
+    voiceScript.forEach((line, i) => {
+      setTimeout(() => {
+        const div = document.createElement('div');
+        div.className = `voice-line ${line.cls}`;
+        div.innerHTML = `<span class="who">${line.who}</span><span class="what">${line.text}</span>`;
+        transcript.appendChild(div);
+        transcript.scrollTop = transcript.scrollHeight;
+
+        if (i === voiceScript.length - 1) {
+          setTimeout(() => mic.classList.remove('active'), 800);
+        }
+      }, i * 1400);
+    });
+  }
+
+  function resetVoice() {
+    const transcript = document.getElementById('transcript');
+    const mic = document.getElementById('mic');
+    mic.classList.remove('active');
+    transcript.innerHTML = `
+      <div class="voice-line" style="opacity: 0.5;">
+        <span class="who">SYSTEM</span><span class="what">▸ Tap the mic to start the demo</span>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>
